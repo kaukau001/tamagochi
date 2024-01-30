@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RestSharp;
 
 public class PokemonDTO
@@ -99,7 +97,7 @@ class Program
             Console.WriteLine($"Dados do Pokémon");
             Console.WriteLine($"Nome: {pokemonDTO.Name.ToString().ToUpper()}");
             Console.WriteLine($"ID: {pokemonDTO.Id}");
-            Console.WriteLine($"Peso: {pokemonDTO.Weight} hectogramas");
+            Console.WriteLine($"Peso: {pokemonDTO.Weight}");
 
             Console.WriteLine("Stats:");
             foreach (var stat in pokemonDTO.Stats)
