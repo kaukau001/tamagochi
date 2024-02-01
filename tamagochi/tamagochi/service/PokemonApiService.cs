@@ -16,11 +16,6 @@ namespace tamagochi.service
                 var pokemonSpeciesDTO = JsonConvert.DeserializeObject<PokemonSpeciesDTO>(response.Content);
                 List<string> pokemonNames = pokemonSpeciesDTO.Results.Select(result => result.Name).ToList();
 
-                foreach (var result in pokemonSpeciesDTO.Results)
-                {
-                    Console.WriteLine($"Nome: {result.Name.ToUpper()}");
-                }
-
                 return pokemonNames;
             }
             catch (Exception ex)
@@ -29,9 +24,9 @@ namespace tamagochi.service
                 return new List<string>();
             }
         }
-        public static PokemonDTO GetPokemonDetails(string pokemonName)
+        public static PokemonDTO GetPokemonDetails(int pokemonNumber)
         {
-            string apiUrl = $"https://pokeapi.co/api/v2/pokemon/{pokemonName}/";
+            string apiUrl = $"https://pokeapi.co/api/v2/pokemon/{pokemonNumber}/";
             var client = new RestClient(apiUrl);
             var request = new RestRequest("", Method.Get);
 

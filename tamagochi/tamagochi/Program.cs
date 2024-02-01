@@ -1,5 +1,8 @@
 ﻿using tamagochi.service;
 using tamagochi.dto;
+using tamagochi.view;
+using System;
+using System.Collections.Generic;
 
 public class Program
 {
@@ -7,32 +10,70 @@ public class Program
     {
         try
         {
-            Console.WriteLine("Escolha um Pokémon entre os 20 abaixo:");
+            Menu menu = new Menu();
 
-            var pokemonListNames = PokemonApiService.GetAllPokemonsNames();
+            menu.WellcomeMessage();
+            List<string> pokemonListNames = PokemonApiService.GetAllPokemonsNames();
+            List<PokemonDTO> adoptedPokemons = new List<PokemonDTO>();
+            int mainChoice;
 
-            while (true)
+            do
             {
-                Console.Write("Digite o nome do Pokémon escolhido ('exit' para sair): ");
-                string pokemonName = Console.ReadLine().ToLower();
+                menu.PrincipalMenu();
+                mainChoice = menu.GetPlayersChoice();
 
-                if (pokemonName == "exit")
+                switch (mainChoice)
                 {
-                    Console.WriteLine("Programa encerrado. Até logo!");
-                    return;
-                }
+                    case 1:
+                        int adoptionChoice;
+                        do
+                        {
+                            menu.ShowAdoptionMenu();
+                            adoptionChoice = menu.GetPlayersChoice();
 
-                if (pokemonListNames.Contains(pokemonName))
-                {
-                    PokemonDTO pokemonDTO = PokemonApiService.GetPokemonDetails(pokemonName);
-                    DisplayPokemonDTO(pokemonDTO);
-                    break;
+                            switch (adoptionChoice)
+                            {
+                                case 1:
+                                    menu.ShowPokemonNames(pokemonListNames);
+                                    break;
+                                case 2:
+                                    menu.ShowPokemonNames(pokemonListNames);
+                                    int chosenPokemonNumber = menu.GetChosenPokemonNumber(pokemonListNames);
+                                    PokemonDTO pokemonDTO = PokemonApiService.GetPokemonDetails(chosenPokemonNumber);
+                                    menu.ShowPokemonDetails(pokemonDTO);
+                                    break;
+                                case 3:
+                                    menu.ShowPokemonNames(pokemonListNames);
+                                    chosenPokemonNumber = menu.GetChosenPokemonNumber(pokemonListNames);
+                                    pokemonDTO = PokemonApiService.GetPokemonDetails(chosenPokemonNumber);
+                                    menu.ShowPokemonDetails(pokemonDTO);
+
+                                    if (menu.ConfirmAdoption())
+                                    {
+                                        adoptedPokemons.Add(pokemonDTO);
+                                        Console.WriteLine("Parabéns! Você adotou um " + pokemonDTO.Name + "!");
+                                        Console.WriteLine("──────────────");
+                                        Console.WriteLine("────▄████▄────");
+                                        Console.WriteLine("──▄████████▄──");
+                                        Console.WriteLine("──██████████──");
+                                        Console.WriteLine("──▀████████▀──");
+                                        Console.WriteLine("─────▀██▀─────");
+                                        Console.WriteLine("──────────────");
+                                    }
+                                    break;
+                                case 4:
+                                    break;
+                            }
+                        } while (adoptionChoice != 4);
+                        break;
+                    case 2:
+                        menu.ShowAdoptedPokemons(adoptedPokemons);
+                        break;
+                    case 3:
+                        Console.WriteLine("Safoda!");
+                        break;
                 }
-                else
-                {
-                    Console.WriteLine("Pokemon não reconhecido. Certifique-se de digitar corretamente.");
-                }
-            }
+            } while (mainChoice != 3);
         }
         catch (Exception ex)
         {
@@ -40,30 +81,8 @@ public class Program
         }
         finally
         {
-            Console.WriteLine("Programa encerrado. Pressione qualquer tecla para sair...");
+            Console.WriteLine("Pressione qualquer tecla para sair...");
             Console.ReadKey();
-        }
-    }
-
-    static void DisplayPokemonDTO(PokemonDTO pokemonDTO)
-    {
-        if (pokemonDTO != null)
-        {
-            Console.WriteLine($"\nDADOS DO POKEMON" +
-                $"\n NOME: {pokemonDTO.Name.ToUpper()}" +
-                $"\n ALTURA: {pokemonDTO.Height}" +
-                $"\n ID: {pokemonDTO.Id}" +
-                $"\n PESO: {pokemonDTO.Weight}" +
-                $"\n ABILIDADES:");
-            foreach (var ability in pokemonDTO.Abilities)
-            {
-                Console.WriteLine($"    {ability.Ability.Name.ToUpper()}");
-            }
-            Console.WriteLine(" STATS:");
-            foreach (var stat in pokemonDTO.Stats)
-            {
-                Console.WriteLine($"    {stat.InnerStat.Name.ToUpper()}: {stat.BaseStat}");
-            }
         }
     }
 }
